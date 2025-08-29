@@ -1,0 +1,153 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+    
+    function hasRole(role) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+    
+    function isAdmin() {
+      return hasRole('admin');
+    }
+    
+    function isOrganizer() {
+      return hasRole('organizer') || isAdmin();
+    }
+    
+    function isPlayer() {
+      return hasRole('player') || isOrganizer();
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read and write their own document
+      allow read, write: if isOwner(userId);
+      // Admin can read all users
+      allow read: if isAdmin();
+      // Admin can delete users
+      allow delete: if isAdmin();
+      // Allow creation of new user documents (for signup)
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Teams collection
+    match /teams/{teamId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                      request.auth.uid == request.resource.data.captainId;
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.captainId ||
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        request.auth.uid == resource.data.captainId || isAdmin()
+      );
+    }
+    
+    // Tournaments collection
+    match /tournaments/{tournamentId} {
+      allow read: if true; // Public read access
+      allow create: if isOrganizer();
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.organizerId || isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        request.auth.uid == resource.data.organizerId || isAdmin()
+      );
+    }
+    
+    // Registrations collection
+    match /registrations/{registrationId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.userId ||
+        request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId ||
+        isAdmin()
+      );
+      allow create: if isPlayer() && 
+                      request.auth.uid == request.resource.data.userId;
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == resource.data.userId && request.resource.data.paymentStatus == 'pending') ||
+        (request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId && 
+         (request.resource.data.paymentStatus == 'approved' || request.resource.data.paymentStatus == 'rejected')) ||
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        request.auth.uid == resource.data.userId || isAdmin()
+      );
+    }
+    
+    // Matches collection
+    match /matches/{matchId} {
+      allow read: if true; // Public read access
+      allow create: if isOrganizer();
+      allow update: if isAuthenticated() && (
+        request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId ||
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId ||
+        isAdmin()
+      );
+    }
+    
+    // Brackets collection
+    match /brackets/{bracketId} {
+      allow read: if true; // Public read access
+      allow create: if isOrganizer();
+      allow update: if isAuthenticated() && (
+        request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId ||
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId ||
+        isAdmin()
+      );
+    }
+    
+    // Highlights collection
+    match /highlights/{highlightId} {
+      allow read: if true; // Public read access
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.uploadedBy ||
+        request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId ||
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        request.auth.uid == resource.data.uploadedBy ||
+        request.auth.uid == get(/databases/$(database)/documents/tournaments/$(resource.data.tournamentId)).data.organizerId ||
+        isAdmin()
+      );
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    // Audit logs collection
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+    
+    // Default rule - deny all other operations
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
