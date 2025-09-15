@@ -92,7 +92,7 @@ This is a full-stack, Firebase-powered web app for organizing and participating 
 ├── storage.rules             # Storage security rules
 ├── firebase.json             # Firebase config
 └── env.example               # Example env vars
-
+```
 ## 🎯 Core Workflows
 ### User onboarding
 - functions/src/auth.ts:onUserCreate runs on Auth signup.
