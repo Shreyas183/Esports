@@ -60,37 +60,37 @@ This is a full-stack, Firebase-powered web app for organizing and participating 
 ## 📁 Project Structure
 
 ├── functions/
-│   └── src/
-│       ├── index.ts          # Entry: exports all functions
-│       ├── auth.ts           # onUserCreate (seed user + claims + audit)
-│       ├── admin.ts          # setCustomClaims (admin-only)
-│       ├── brackets.ts       # generateBrackets (callable)
-│       ├── payments.ts       # verifyPayment (callable)
-│       ├── scheduler.ts      # timeGateRoomCreds (pub/sub schedule)
-│       ├── stats.ts          # recalcStats on match completion
-│       └── types.ts          # Backend types
+│ └── src/
+│ ├── index.ts # Entry: exports all functions
+│ ├── auth.ts # onUserCreate (seed user + claims + audit)
+│ ├── admin.ts # setCustomClaims (admin-only)
+│ ├── brackets.ts # generateBrackets (callable)
+│ ├── payments.ts # verifyPayment (callable)
+│ ├── scheduler.ts # timeGateRoomCreds (pub/sub schedule)
+│ ├── stats.ts # recalcStats on match completion
+│ └── types.ts # Backend types
 ├── src/
-│   ├── components/
-│   │   ├── auth/ProtectedRoute.tsx
-│   │   └── ui/*              # shadcn/ui components
-│   ├── hooks/
-│   │   ├── useAuth.ts        # Auth provider and actions
-│   │   └── use-auth.ts       # Permissions, profile, nav helpers
-│   ├── pages/
-│   │   ├── DashboardRouter.tsx
-│   │   ├── AdminDashboard.tsx
-│   │   ├── OrganizerDashboard.tsx
-│   │   ├── PlayerDashboard.tsx
-│   │   └── ViewerDashboard.tsx
-│   ├── services/
-│   │   ├── firebase.ts       # Firebase app + helpers (no emulator)
-│   │   ├── cloudFunctions.ts # Callable clients
-│   │   └── tournaments.ts    # Firestore tournament service
-│   └── types/index.ts        # Frontend types
-├── firestore.rules           # Firestore security rules
-├── storage.rules             # Storage security rules
-├── firebase.json             # Firebase config
-└── env.example               # Example env vars
+│ ├── components/
+│ │ ├── auth/ProtectedRoute.tsx
+│ │ └── ui/* # shadcn/ui components
+│ ├── hooks/
+│ │ ├── useAuth.ts # Auth provider and actions
+│ │ └── use-auth.ts # Permissions, profile, nav helpers
+│ ├── pages/
+│ │ ├── DashboardRouter.tsx
+│ │ ├── AdminDashboard.tsx
+│ │ ├── OrganizerDashboard.tsx
+│ │ ├── PlayerDashboard.tsx
+│ │ └── ViewerDashboard.tsx
+│ ├── services/
+│ │ ├── firebase.ts # Firebase app + helpers (no emulator)
+│ │ ├── cloudFunctions.ts # Callable clients
+│ │ └── tournaments.ts # Firestore tournament service
+│ └── types/index.ts # Frontend types
+├── firestore.rules # Firestore security rules
+├── storage.rules # Storage security rules
+├── firebase.json # Firebase config
+└── env.example # Example env vars
 
 
 ## 🎯 Core Workflows
