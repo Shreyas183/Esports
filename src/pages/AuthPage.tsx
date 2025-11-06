@@ -91,6 +91,7 @@ const AuthPage = () => {
           </div>
           <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
           <p className="text-muted-foreground">Sign in to your esports journey</p>
+          {/* <div className="drop-box" /> */}
         </div>
 
         <Card className="card-gradient border-border/20 shadow-card">
@@ -226,7 +227,7 @@ const AuthPage = () => {
                     <Label htmlFor="signup-role">Role</Label>
                     <select
                       id="signup-role"
-                      className="w-full border rounded px-3 py-2"
+                      className="w-full px-3 py-2 rounded-md bg-gray-800 text-gray-200 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       {...signUpForm.register("role")}
                     >
                       <option value="viewer">Viewer</option>

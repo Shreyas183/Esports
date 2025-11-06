@@ -540,7 +540,7 @@ const TournamentDetail = () => {
             )}
 
             {/* Sponsors */}
-            {tournament.sponsors.length > 0 && (
+            {tournament?.sponsors?.length > 0 && (
               <Card className="card-gradient border-border/20">
                 <CardHeader>
                   <CardTitle>Sponsors</CardTitle>
